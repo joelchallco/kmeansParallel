@@ -193,9 +193,8 @@ public:
         _fName = fName;
         setPoints(fName);
         initCentroides();
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             updatePointCluster();
-
             updateCentroideCluster();
         }
 
@@ -267,7 +266,9 @@ public:
         return 1;
     }
 
-    bool updatePointCluster(vector<point> secPoint) {
+    bool updatePointCluster() {
+        
+        #pragma omp parallel for
         for (int i = 0; i < points.size(); i++) {
             vector<double> dis;
             for (int j = 0; j < centroides.size(); j++) {
@@ -281,16 +282,11 @@ public:
                 if (min > dis[j]) {
                     min = dis[j];
                     points[i]._group = j;
-                    //cout << "sdfsf" << endl;
                 }
-                //cout << points[i]._group << endl;
-                //system("pause");
             }
-            //cout <<"cluster: " << points[i]._group << endl;
-
+            
         }
-        //cout << "primer punto: " << points[7000]._group << endl;
-        //system("pause");
+        //#pragma omp for num_thread(5)
         return 1;
     }
 
@@ -341,9 +337,9 @@ public:
   
 int main(int argc, char* argv[])
 {
-    int nthreads, tid;
+    //kmeans k(5, "../puntos_5_bloques.txt");
 
-    kmeans k(5, "../puntos_5_bloques.txt");
+    kmeansParallel kk(5, "../puntos_5_bloques.txt");
     //k.setPoints("../puntos_2_bloques.txt");
     //k.initCentroides();
     //cout << k.centroides[0]._x << endl;
@@ -363,19 +359,19 @@ int main(int argc, char* argv[])
     //k.getPoints();
 
     // Begin of parallel region
-    #pragma omp parallel private(nthreads, tid)
-    {
-        // Getting thread number
-        tid = omp_get_thread_num();
-        printf("Welcome to GFG from thread = %d\n",
-               tid);
+    //#pragma omp parallel private(nthreads, tid)
+    //{
+    //    // Getting thread number
+    //    tid = omp_get_thread_num();
+    //    printf("Welcome to GFG from thread = %d\n",
+    //           tid);
   
-        if (tid == 0) {
+    //    if (tid == 0) {
   
-            // Only master thread does this
-            nthreads = omp_get_num_threads();
-            printf("Number of threads = %d\n",
-                   nthreads);
-        }
-    }
+    //        // Only master thread does this
+    //        nthreads = omp_get_num_threads();
+    //        printf("Number of threads = %d\n",
+    //               nthreads);
+    //    }
+    //}
 }
